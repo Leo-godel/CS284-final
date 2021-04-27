@@ -27,10 +27,11 @@ double Matrix2D::det(void) const {
 Matrix2D Matrix2D::T(void) const {
 	const Matrix2D& A(*this);
 	Matrix2D B;
-	for (int i = 0; i < 2; ++i)
-		for (int j = 0; j < 2; ++j)
-			B(i, j) = A(j, i);
-			return B;
+	for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j)
+            B(i, j) = A(j, i);
+	}
+	return B;
 }
 
 Matrix2D Matrix2D::inv(void) const {

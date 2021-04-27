@@ -74,7 +74,7 @@ int main()
 	int frame_count = 0;
 	while (!glfwWindowShouldClose(window)) {
 		cout << "frame:" << frame_count << endl;
-		// update();
+		 update();
 
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);

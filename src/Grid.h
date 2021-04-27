@@ -10,7 +10,7 @@
 struct Node {
 	double mass;
 	bool active;
-	Vector2D vel, vel_new;
+	Vector2D vel, vel_new, force;
 };
 
 class Grid
@@ -44,10 +44,12 @@ public:
 	// Map volumes of particles: contains how many nodes
 	// only called once
 	void initVolumes();
-	// Compute velocity of next time step
-	void computeForceVel();
+	// Compute force and velocity of next time step
+	void computeForce();
+    void updateVelocity();
+    void updateDeformation();
 	// Map back to pariticles
-	void updateParticles();
+	void updateParticlesVelocity();
 
 	// Board Collision
 	void collisionGrid();

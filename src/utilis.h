@@ -23,7 +23,7 @@ inline double bspline(double x) {
 	return w;
 }
 //Slope of interpolation function
-inline double bsplineSlope(float x) {
+inline double bsplineSlope(double x) {
 	double abs_x = fabs(x), w;
 	if (abs_x < 1)
 		return 1.5 * x * abs_x - 2 * x;

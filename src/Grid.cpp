@@ -49,7 +49,8 @@ void Grid::initGridMassVel() {
 	}
 
     for (int i = 0; i < nodes_length; ++i) {
-        nodes[i].vel /= nodes[i].mass;
+        if(nodes[i].active)
+            nodes[i].vel /= nodes[i].mass;
     }
 }
 
@@ -107,64 +108,86 @@ void Grid::initVolumes() {
 }
 
 //Calculate grid's velocity of next timestep
-void Grid::computeForceVel() {
+void Grid::computeForce() {
     int len = particles->size();
 
     for (int i = 0; i < len; ++i) {
         Particle &p = particles->at(i);
+
         // First calculate force based on mpmcourse and taichi 88 line
-        polar_decomposition(p.deformation_gradient);
+        Matrix2D R, S;
+        polarDecomp(p.deformation_gradient, R, S);
         p.volume = p.deformation_gradient.det();
 
+        double e = std::exp(HARDENING * (1.0f - p.volume));
+        auto lambda = LAMBDA * e;
+        auto mu = MU * e;
+
+        Matrix2D F_inv = p.deformation_gradient.inv();
+        Matrix2D P = ((p.deformation_gradient - R) * mu * 2) + (F_inv.T() * lambda * (p.volume - 1) * p.volume);
+        p.stress = P * p.deformation_gradient.T() * (1 / p.volume);
+
+        // accumulate particle stress to grids
+        int p_x = (int)p.grid_p.x;
+        int p_y = (int)p.grid_p.y;
+        for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
+            for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
+                double w = p.weights[it];
+                int node_id = int(y * size.x + x);
+                if (w > BSPLINE_EPSILON) {
+                    nodes[node_id].force -= p.stress * p.weight_gradient[it] * p.volume;
+                }
+            }
+        }
     }
+    collisionGrid();
+}
 
-
-//    auto PF = (2 * mu * (p.F-r) * transposed(p.F) + lambda * (J-1) * J);
-//
-//    // Cauchy stress times dt and inv_dx
-//    auto stress = - (dt * vol) * (Dinv * PF);
-
-
-
-	for (int i = 0; i < len; ++i) {
-		Particle& p = particles->at(i);
-		int p_x = (int)p.grid_p.x;
-		int p_y = (int)p.grid_p.y;
-
-		// p.calcStress is not implemented yet
-		Matrix2D inner_force = p.calcStress();
-		
-		for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
-			for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
-				double w = p.weights[it];
-				int node_id = int(y * size.x + x);
-
-				if (w > BSPLINE_EPSILON) {
-					nodes[node_id].vel_new += inner_force * p.weight_gradient[it];
-				}
-			}
-		}
-	}
+void Grid::updateVelocity() {
     // here is how we update grid velocity
-	for (int i = 0; i < nodes_length; ++i) {
-		if (nodes[i].active) {
-			nodes[i].vel_new = nodes[i].vel + TIMESTEP * (GRAVITY - nodes[i].vel_new / nodes[i].mass);
-		}
-	}
+    for (int i = 0; i < nodes_length; ++i) {
+        if (nodes[i].active) {
+            nodes[i].vel_new = nodes[i].vel + TIMESTEP * (GRAVITY + nodes[i].force / nodes[i].mass);
+        }
+    }
+}
+
+void Grid::updateDeformation() {
+    int len = particles->size();
+
+    for (int i = 0; i < len; ++i) {
+        Particle& p = particles->at(i);
+        int p_x = (int)p.grid_p.x;
+        int p_y = (int)p.grid_p.y;
+        for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
+            for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
+                double temp = p.weights[it];
+                Vector2D delta_w = p.weight_gradient[it];
+                int node_id = int(y * size.x + x);
+                if (temp > BSPLINE_EPSILON) {
+                    p.velocity_gradient += outer_product(nodes[node_id].vel, delta_w);
+                }
+            }
+        }
+    }
+    Matrix2D I = Matrix2D();
+    for(int i = 0; i < len; ++i) {
+        Particle& p = particles->at(i);
+        p.deformation_gradient = (I + p.velocity_gradient * TIMESTEP) * p.deformation_gradient;
+    }
 }
 
 // Map back to particles
-void Grid::updateParticles() {
+void Grid::updateParticlesVelocity() {
 	int len = particles->size();
 
 	for (int i = 0; i < len; ++i) {
 		Particle& p = particles->at(i);
-		double p_x = p.grid_p.x, p_y = p.grid_p.y;
+        int p_x = (int)p.grid_p.x;
+        int p_y = (int)p.grid_p.y;
 
-		Vector2D pic, flip = p.vel;
-		Matrix2D& gradient = p.velocity_gradient;
+		Vector2D v_pic, v_flip = p.vel;
 
-		// Recomputer density
 		p.density = 0;
 		for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
 			for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
@@ -172,24 +195,13 @@ void Grid::updateParticles() {
 				int node_id = int(y * size.x + x);
 				if (w > BSPLINE_EPSILON) {
 					Node& node = nodes[node_id];
-					
-					// Particle in cell: no idea
-					pic += node.vel_new;
-					// Fluid implicit particle: no idea
-					flip += (node.vel_new - node.vel) * w;
-					// Velocity gradient: no idea
-					gradient += outer_product(node.vel_new, p.weight_gradient[it]);
-
-					p.density += w * node.mass;
+					v_pic += node.vel_new * w;
+					v_flip += (node.vel_new - node.vel) * w;
 				}
 			}
 		}
-		p.density /= node_area;
-
-		// Final velocity: linear combination of pic and flip
-		p.vel = flip * FLIP_PERCENT + pic * (1 - FLIP_PERCENT);
+		p.vel = v_flip * FLIP_PERCENT + v_pic * (1 - FLIP_PERCENT);
 	}
-
 	collisionParticles();
 }
 

@@ -5,16 +5,12 @@ void Simulator::update() {
 	grid->initGridMassVel();
 //	grid->initGridVel();
 
-	grid->computeForceVel();
+	grid->computeForce();
+	grid->updateVelocity();
 
-	grid->updateParticles();
+	grid->updateDeformation();
+	grid->updateParticlesVelocity();
 
 	// update Particles
 	scene->update();
-
-    // G2P step
-//    grid->updateVelocities();
-//
-//    //Update particle data
-//    snow->update();
 }
