@@ -13,7 +13,7 @@ void Scene::init() {
 	snows.push_back(snow4);
 
 
-	// particles generator based on ditribution of each shapes' area
+	// particles generator based on distribution of each shapes' area
 	double total_area = 0;
 	int len = snows.size();
 	for (int i = 0; i < len; ++i) {
@@ -59,8 +59,9 @@ void Scene::init() {
 void Scene::update() {
 	int len = particles.size();
 	for (int i = 0; i < len; ++i) {
-		//particles[i].updatePosition();
-		//particles[i].updateForce();
+		// Not implemented yet
+		particles[i].updatePosition();
+		particles[i].updateForce();
 	}
 }
 

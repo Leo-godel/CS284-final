@@ -2,8 +2,12 @@
 #include <GLFW/glfw3.h>
 #include "Constants.h"
 #include "Scene.h"
+#include "Simulator.h"
 
 using namespace std;
+
+Simulator* simluator;
+Scene* scene;
 
 void initGLContext() {
 	glMatrixMode(GL_MODELVIEW);
@@ -44,16 +48,18 @@ GLFWwindow* initGLFWContext() {
 	return window;
 }
 
-void init(Scene* scene) {
+void init() {
+	scene = new Scene();
 	scene->init();
 
+	simluator = new Simulator(scene);
 }
 
 void update() {
-
+	simluator->update();
 }
 
-void render(Scene* scene) {
+void render() {
 	scene->draw();
 }
 
@@ -62,17 +68,17 @@ int main()
 	GLFWwindow* window = initGLFWContext();
 	initGLContext();
 
-	Scene* scene = new Scene();
-	init(scene);
+	
+	init();
 
 	int frame_count = 0;
 	while (!glfwWindowShouldClose(window)) {
 		cout << "frame:" << frame_count << endl;
-		update();
+		// update();
 
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
-		render(scene);
+		render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

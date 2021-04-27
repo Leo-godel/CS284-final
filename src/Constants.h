@@ -26,6 +26,10 @@ MU = YOUNGS_MODULUS / (2 + 2 * POISSONS_RATIO);
 
 static const Vector2D GRAVITY = Vector2D(0, -9.8);
 
+static const double BSPLINE_EPSILON = 1e-4;
+static const int BSPLINE_RADIUS = 2;
+
+
 //Various compiler options
 #define WIN_SIZE_X 1280
 #define WIN_SIZE_Y 640

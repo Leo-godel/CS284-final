@@ -48,11 +48,25 @@ public:
 		vr *= r;
 		return vr;
 	}
+	inline Vector2D operator*(const Vector2D& v) const {
+		Vector2D vr = *this;
+		vr.x *= v.x;
+		vr.y *= v.y;
+		return vr;
+	}
+
 
 	// scalar division
 	inline Vector2D operator/(double r) const {
 		Vector2D vr = *this;
 		vr /= r;
+		return vr;
+	}
+
+	inline Vector2D operator/(Vector2D v) const {
+		Vector2D vr = *this;
+		vr.x = vr.x / v.x;
+		vr.y = vr.y / v.y;
 		return vr;
 	}
 
@@ -78,6 +92,9 @@ public:
 	inline void operator/=(double r) {
 		x /= r;
 		y /= r;
+	}
+	inline void operator/=(Vector2D v) {
+		*this = *this / v;
 	}
 
 	/**
