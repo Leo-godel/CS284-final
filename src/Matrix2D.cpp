@@ -99,3 +99,12 @@ void Matrix2D::operator/=(double x) {
 	A[0] *= rx;
 	A[1] *= rx;
 }
+
+Matrix2D Matrix2D::operator+(const Matrix2D& B) const {
+	const Matrix2D& A(*this);
+	Matrix2D C;
+	C[0] = A[0] + B[0];
+	C[1] = A[1] + B[1];
+
+	return C;
+}

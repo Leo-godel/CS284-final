@@ -51,6 +51,9 @@ public:
 	// increments by B
 	void operator+=(const Matrix2D& B);
 
+	// A+c
+	Matrix2D operator+(const Matrix2D& B) const;
+
 	// returns -A
 	Matrix2D operator-(void) const;
 
