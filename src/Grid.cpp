@@ -11,6 +11,8 @@ void Grid::initGridMassVel() {
 
 		// get the index of the grid cross point corresponding to the particle (it is on the bottom left of the particle)
 		p.grid_p = (p.pos - origin) / node_size;
+		assert(p.grid_p.x >= 0);
+        assert(p.grid_p.y >= 0);
 		int p_x = (int)p.grid_p.x;  // x coord index in grid
 		int p_y = (int)p.grid_p.y;  // y coord index in grid
 
@@ -36,14 +38,19 @@ void Grid::initGridMassVel() {
 				p.weights[it] = w;
 
 				// set weight gradient
-				// PS: Dont know why need this, reserve in case for particle inner force calculation
 				p.weight_gradient[it] = Vector2D(dx * weight_y, dy * weight_x);
-				p.weight_gradient[it] /= node_size;
+//				p.weight_gradient[it] /= node_size;
 
 				// set node weighted mass and velocity
 				int node_id = int(y * size.x + x);
+				if (!nodes[node_id].active) {
+				    assert(nodes[node_id].mass == 0);
+                    assert(nodes[node_id].vel.x == 0);
+                    assert(nodes[node_id].vel.y == 0);
+				}
 				nodes[node_id].mass += w * p.mass;
                 nodes[node_id].vel += p.vel * w * p.mass;
+                nodes[node_id].active = true;
 			}
 		}
 	}
@@ -51,6 +58,11 @@ void Grid::initGridMassVel() {
     for (int i = 0; i < nodes_length; ++i) {
         if(nodes[i].active)
             nodes[i].vel /= nodes[i].mass;
+        else {
+            assert(nodes[i].mass == 0);
+            assert(nodes[i].vel.x == 0);
+            assert(nodes[i].vel.y == 0);
+        }
     }
 }
 
@@ -116,16 +128,20 @@ void Grid::computeForce() {
 
         // First calculate force based on mpmcourse and taichi 88 line
         Matrix2D R, S;
+        Matrix2D U, Sig, V;
         polarDecomp(p.deformation_gradient, R, S);
-        p.volume = p.deformation_gradient.det();
+        svd(p.deformation_gradient, U, Sig, V);
+        assert(R.det() == (U * V.T()).det());
+        assert(S.det() == (V * Sig * V.T()).det());
+        p.volume *= p.deformation_gradient.det();
 
-        double e = std::exp(HARDENING * (1.0f - p.volume));
-        auto lambda = LAMBDA * e;
-        auto mu = MU * e;
+        double e = std::exp(HARDENING * (1.0f - p.deformation_gradient.det()));
+        double lambda = LAMBDA * e;
+        double mu = MU * e;
 
         Matrix2D F_inv = p.deformation_gradient.inv();
         Matrix2D P = ((p.deformation_gradient - R) * mu * 2) + (F_inv.T() * lambda * (p.volume - 1) * p.volume);
-        p.stress = P * p.deformation_gradient.T() * (1 / p.volume);
+        p.stress = P * p.deformation_gradient.T() * (1 / p.deformation_gradient.det());
 
         // accumulate particle stress to grids
         int p_x = (int)p.grid_p.x;
@@ -134,22 +150,26 @@ void Grid::computeForce() {
             for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
                 double w = p.weights[it];
                 int node_id = int(y * size.x + x);
+                Node& node = nodes[node_id];
                 if (w > BSPLINE_EPSILON) {
-                    nodes[node_id].force -= p.stress * p.weight_gradient[it] * p.volume;
+                    node.force -= p.stress * p.weight_gradient[it] * p.volume;
                 }
             }
         }
     }
-    collisionGrid();
+//    collisionGrid();
 }
 
 void Grid::updateVelocity() {
     // here is how we update grid velocity
     for (int i = 0; i < nodes_length; ++i) {
         if (nodes[i].active) {
+            cout << "force: " << (nodes[i].force).norm() << endl;
+            cout << "acceration: " << (nodes[i].force / nodes[i].mass).norm() << endl;
             nodes[i].vel_new = nodes[i].vel + TIMESTEP * (GRAVITY + nodes[i].force / nodes[i].mass);
         }
     }
+    collisionGrid();
 }
 
 void Grid::updateDeformation() {
@@ -188,7 +208,7 @@ void Grid::updateParticlesVelocity() {
 
 		Vector2D v_pic, v_flip = p.vel;
 
-		p.density = 0;
+//		p.density = 0;
 		for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
 			for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
 				double w = p.weights[it];
