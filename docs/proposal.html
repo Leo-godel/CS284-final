@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta charset="utf-8">
+         <title>MPM Snow Simulation With G2P2G and AoSoA Optimization - CS 184/284</title>
+         <link rel="stylesheet" href="style.css">
+     </head>
+     <body>
+         <div class="site-header">
+             <div class="row">
+                 <div class="name-header">
+                     <p>MPM Snow Simulation With G2P2G and AoSoA Optimization - CS 184/284</p>
+                 </div>
+                 <div class="title-bar">
+                     <ul>
+                         <li>
+                             <a href="proposal.html">Proposal</a>
+                         </li>
+                         <li>
+                             <a href="milestone.html">Milestone</a>
+                         </li>
+                         <li>
+                             <a href="report.html">Final Report</a>
+                         </li>
+                     </ul>
+                 </div>
+             </div>
+         </div>
+         <!-- <div class="main-pic" align="center">
+             <img src="images/furball.png" -->
+         </div>
+    <style>
+        div.padded {
+            padding-top: 0px;
+            padding-right: 100px;
+            padding-bottom: 0.25in;
+            padding-left: 100px;
+        }
+
+        code {
+            padding: 0;
+            padding-top: 0.2em;
+            padding-bottom: 0.2em;
+            font-family: Consolas, "courier new";
+            margin: 0;
+            font-size: 95%;
+            border-radius: 2px;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+        }
+
+        .center-small {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;
+        }
+
+        .center-mini {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 20%;
+        }
+
+        .center-large {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .tb {
+            border-collapse: collapse;
+        }
+    </style>
+    <title>Final Project Proposal | CS 284</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+    <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+</head>
+<body>
+<h1 align="middle">Final Project Proposal: MPM Snow Simulation With G2P2G and AoSoA Optimization</h1>
+<div class="padded">
+<h2 align="middle">Summary</h2>
+<p>
+    Efficient snow simulation is a challenging task. In this project, we aim to implement efficient parallel MPM snow simulation algorithm that can run quickly on GPU platforms. We will use our algorithm to simulate complex scenes as well as make comparison and benchmarking between optimized algorithm and unoptimized versions.
+</p>
+
+<h2 align="middle">Team Members</h2>
+<p>
+    Our group includes 4 team members.
+    <ul>
+        <li>Chiyu Wang -- 3032706029: CS184 Student</li>
+        <li>Rui Liu -- 3036361548: CS284 Student</li>
+        <li>Yifei Zhang -- 3036360911: CS284 Student</li>
+        <li>Yizhou Wang -- 3036359585: CS284 Student</li>
+    </ul>
+</p>
+<h2 align="middle">Problem Description</h2>
+<p>
+    Snow simulation is a challenging task due to the complex physical nature of snow. Material Point Method (MPM) has been widely used in snow simulation to produce realistic simulation effects. However, MPM is a computational heavy and time consuming algorithm. The state-of-the-art optimized CPU algorithm takes more than over 500 seconds in simulating a complex scene including 5M particles. In recent years, more research dives into how to effectively utilize GPU to speed up the MPM algorithm. A recent work published in SIGGRAPH 2020 reformulated the MPM algorithm's pipeline and designed new  Array-of-Structs-of-Array (AoSoA) data structure to further speed up the MPM performance.
+</p>
+
+<h2 align="middle">Goals and Deliverables</h2>
+<p>
+    Our goal in this project is to use re-structured MPM algorithm with a fused G2P2G kernel function and AoSoA data structure to speed up the snow simulation process.
+</p>
+<p>
+    Our minimum final deliverable will include a few demonstration of final snow simulation results as will as performance comparision between optimized GPU algorithm, a few optimization milestones, and unoptimized CPU algorithm. We hope that we at least achieve 10x speed up with the help of state-of-the-art GPU algorithm.
+</p>
+<p>
+    If things go really smooth, we will have more time spent on the optimization stage, so that we may try more optimization methods and have higher performance improvement.
+</p>
+
+<h2 align="middle">Schedule</h2>
+<p>
+<ul>
+    <li>Week 1: Finalize frameworks and methods; finish basic MPM pipeline snow simulation </li>
+    <li>Week 2: Finish the initial working version of snow simulation; start optimization</li>
+    <li>Week 3: Optimize snow simulation with G2P2G and AoSoA on CUDA</li>
+    <li>Week 4: Finish final delivery and performance measurement/comparison</li>
+</ul>
+</p>
+
+<h2 align="middle">Resources</h2>
+<h3 align="middle">Related Works</h3>
+<p>
+<ul>
+    <li>A material point method for snow simulation: https://www.math.ucla.edu/~jteran/papers/SSCTS13.pdf</li>
+    <li>The Material Point Method for Simulating Continuum Materials: https://www.seas.upenn.edu/~cffjiang/research/mpmcourse/mpmcourse.pdf</li>
+    <li>SnowSim - Final Report (CS184 Spring 20 Show case). https://zxcroon.github.io/SnowSim/final-report.pdf</li>
+    <li>A Massively Parallel and Scalable Multi-GPU Material Point Method. https://www.seas.upenn.edu/~cffjiang/research/wang2020multigpu/wang2020multigpu.pdf</li>
+    <li>Codebase of Massively Parallel and Scalable Multi-GPU Material Point Method. https://github.com/penn-graphics-research/claymore</li>
+</ul>
+</p>
+
+<h3 align="middle">Computational Resource</h3>
+<p>Since our project will do optimization based on GPU, we are likely to rent online GPU Cloud Computing products to perform performance benchmarking.  </p>
+
+<h3 align="middle">Framework</h3>
+<p>TBD</p>
+<!--<ul>-->
+<!--    <li>Title, Summary and Team Members:-->
+<!--        Provide us a descriptive title, 2-3 sentences that summarize your project, and list your three team members.</li>-->
+<!--    <li>Problem Description:-->
+<!--        Here you should provide the context for your idea. Describe the problem that you are trying to solve, why it is important, where it is challenging. Give us a general idea on how you are going to solve it.-->
+<!--    </li>-->
+<!--    <li>Goals and Deliverables-->
+<!--        <ul>-->
+<!--            <li>This is the most important part of your proposal. You should carefully think through what you are trying to accomplish, what results you are going for, and why you think you can accomplish those goals. For example:</li>-->
+<!--            <li>Since this is a graphics class you will likely define the kind of images you will create (e.g. including a photo of a new lighting effect you will simulate).</li>-->
+<!--            <li>Define how you will measure the quality / performance of your system (e.g. graphs showing speedup, or quantifying accuracy). It may not be possible to define precise target metrics at this time, but we encourage you to try.</li>-->
+<!--            <li>What questions do you plan to answer with your analysis?</li>-->
+<!--            <li>You should break this section into two parts: (1) what you plan to deliver, and (2) what you hope to deliver. In (1), describe what you believe you must accomplish to have a successful project and achieve the grade you expect (i.e. your baseline plan &#45;&#45; planning for some unexpected problems would make sense). In (2), describe what you hope to achieve if things go well and you get ahead of schedule (your aspirational plan).</li>-->
+<!--        </ul>-->
+<!--    </li>-->
+<!--    <li>Schedule:-->
+<!--        In this section you should organize and plan the tasks and subtasks that your team will execute. Since presentations are ~4 weeks from the due-date of the proposal, you should include a set of tasks for every week.</li>-->
+<!--    <li>Resources:-->
+<!--        List what resources, e.g. books, papers and/or online resources that are references for your project. List the computing platform, hardware and software resources that you will use for your project. You have a wide latitude here to use what you have access to, but be aware that you will have to support and trouble-shoot on your platform yourselves. If you are starting from an existing piece of code or system, describe and provide a pointer to it here.</li>-->
+<!--</ul>-->
+</div>
+</body>
+</html>

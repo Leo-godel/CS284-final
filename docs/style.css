@@ -1,0 +1,127 @@
+.site-header {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    overflow: auto;
+}
+
+.name-header {
+    padding: 20px;
+    float: left;
+    height: fit-content
+}
+.name-header p {
+    font-family: Alegreya Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 28px;
+
+    color: rgb(95, 95, 95);
+}
+.title-bar {
+    float: right;
+    padding: 5px;
+}
+
+.title-bar ul {
+    list-style-type: none;
+    overflow: hidden;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+  }
+
+.title-bar li {
+    padding: 5px;
+    float: left;
+}
+.title-bar li a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-family: Source Sans Pro;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: normal;
+    color: rgb(129, 129, 129);
+    padding: 16px;
+}
+
+.title-bar li a:hover {
+    background-color: rgb(247, 247, 247);
+    border-radius: 18px;
+    color: #5c5c5c;
+}
+
+h2 {
+    font-size: larger;
+}
+h3 {
+    font-size: large;
+}
+h4 {
+    font-size: medium;
+}
+.column {
+    width: 50%;
+    float: left;
+    overflow: hidden;
+}
+
+.welcome-text p{
+    padding: 10%;
+    font-family: Source Sans Pro;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 96px;
+    line-height: normal;
+    text-align: center;
+
+    color: #000000;
+}
+body {
+    margin: 0%;
+}
+
+.main-pic img {
+    width: 25%;
+    margin-top: 25px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+p {
+    display: block;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+html {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background: #FFFFFF;
+    background-repeat:no-repeat;
+    background-repeat: no-repeat;
+}
+
+.report-body {
+    padding: 10px 100px 200px 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+    font-size: 20px;
+}
+
+.report-body h1, h2, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+} 
