@@ -24,8 +24,6 @@ public:
 
 	// init snow balls and convert them into particles
 	void init();
-	
-	void update();
 
 	void draw();
 };

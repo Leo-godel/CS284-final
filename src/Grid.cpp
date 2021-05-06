@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include <cassert>
 
 void Grid::initGridMassVel() {
 	//clear the nodes
@@ -66,34 +67,6 @@ void Grid::initGridMassVel() {
     }
 
     collisionGrid();
-}
-
-// Map particles'velocity to grid
-void Grid::initGridVel() {
-	int len = particles->size();
-	for (int i = 0; i < len; ++i) {
-		Particle& p = particles->at(i);
-		double p_x = p.grid_p.x, p_y = p.grid_p.y;
-		
-		for (int it = 0, y = p_y - 1; y <= p_y + 2; ++y) {
-			for (int x = p_x - 1; x <= p_x + 2; ++x, ++it) {
-				double w = p.weights[it];
-				int node_id = int(y * size.x + x);
-				if (w > BSPLINE_EPSILON) {
-					nodes[node_id].vel += p.vel * w * p.mass;
-					nodes[node_id].active = true;
-				}
-			}
-		}
-	}
-
-	for (int i = 0; i < nodes_length; ++i) {
-		if (nodes[i].active) {
-			nodes[i].vel /= nodes[i].mass;
-		}
-	}
-
-	collisionGrid();
 }
 
 // Calculate particles'volumes
@@ -167,6 +140,7 @@ void Grid::computeForce() {
 //        cout << "stress: " << p.stress.det() << endl;
 
         Matrix2D temp = (p.elastic_deformation - U * V.T()) * p.elastic_deformation.T() * 2 * mu + I * lambda * Je * (Je - 1);
+		temp = temp * p.volume;
 //        std::cout << "temp: " << temp(0, 0) << " " << temp(1, 0) << " " << temp(0, 1) << " " << temp(1, 1) << endl;
 //        std::cout << "temp det: " << temp.det() << endl;
 
@@ -180,7 +154,7 @@ void Grid::computeForce() {
                 Node& node = nodes[node_id];
                 if (w > BSPLINE_EPSILON) {
 //                    std::cout << p.volume << endl;
-                    node.force -= temp * p.volume * p.weight_gradient[it];
+                    node.force -= temp * p.weight_gradient[it];
                 }
             }
         }
@@ -231,7 +205,7 @@ void Grid::updateDeformation() {
         p.deformation_gradient = p.elastic_deformation * p.plastic_deformation;
         Matrix2D U, Sig, V;
         svd(p.elastic_deformation, U, Sig, V);
-        for (int idx=0; idx < 2; ++idx){
+        for (int idx = 0; idx < 2; ++idx){
             if (Sig(idx, idx) < CRIT_COMPRESS) {
                 Sig(idx, idx) = CRIT_COMPRESS;
 //                cout << "Clip compress. " << endl;
@@ -277,8 +251,16 @@ void Grid::updateParticlesVelocity() {
 	collisionParticles();
 }
 
+void Grid::updateParticlesPosition() {
+	int len = particles->size();
+	for (int i = 0; i < len; ++i) {
+		Particle& p = particles->at(i);
+		
+		p.pos += TIMESTEP * p.vel;
+	}
+}
+
 void Grid::collisionGrid() {
-//    cout << "Collision function" << endl;
 	Vector2D delta_scale = Vector2D(TIMESTEP, TIMESTEP);
 	delta_scale /= node_size;
 
@@ -287,15 +269,13 @@ void Grid::collisionGrid() {
 			Node& node = nodes[it];
 			if (!node.active)
 				continue;
-//            cout << "Collision" << endl;
+
 			Vector2D new_pos = node.vel_new * delta_scale + Vector2D(x, y);
 			if (new_pos.x < BSPLINE_RADIUS || new_pos.x > size.x - BSPLINE_RADIUS - 1) {
-//			    cout << "Collision" << endl;
 				node.vel_new.x = 0;
 				node.vel_new.y *= STICKY;
 			}
 			if (new_pos.y < BSPLINE_RADIUS || new_pos.y > size.y - BSPLINE_RADIUS - 1) {
-//                cout << "Collision" << endl;
                 node.vel_new.x *= STICKY;
 				node.vel_new.y = 0;
 			}
@@ -314,11 +294,9 @@ void Grid::collisionParticles() {
 		Vector2D new_pos = p.grid_p + p.vel * delta_scale;
 
 		if (new_pos.x < BSPLINE_RADIUS-1 || new_pos.x > size.x - BSPLINE_RADIUS) {
-//            cout << "Collision" << endl;
 			p.vel.x *= -STICKY;
 		}
 		if (new_pos.y < BSPLINE_RADIUS-1 || new_pos.y > size.y - BSPLINE_RADIUS) {
-//            cout << "Collision" << endl;
 			p.vel.y *= -STICKY;
 		}
 	}

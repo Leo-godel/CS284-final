@@ -11,6 +11,5 @@ void Simulator::update() {
 	grid->updateDeformation();
 	grid->updateParticlesVelocity();
 
-	// update Particles
-	scene->update();
+	grid->updateParticlesPosition();
 }

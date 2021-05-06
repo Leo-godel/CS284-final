@@ -12,8 +12,7 @@ public:
 	Matrix2D velocity_gradient;
 	Matrix2D deformation_gradient, plastic_deformation, elastic_deformation;
 	Matrix2D stress;
-	// Lame parameters
-	double lambda, mu;
+	
 	// assigned grid index
 	Vector2D grid_p;
 	// weight value for nearest 16 grid nodes
@@ -24,8 +23,8 @@ public:
 
 	Particle() {};
 	
-	Particle(const Vector2D& pos, const Vector2D& vel, double mass, double lambda, double mu) :
-		pos(pos), vel(vel), mass(mass), lambda(lambda), mu(mu) {
+	Particle(const Vector2D& pos, const Vector2D& vel, double mass) :
+		pos(pos), vel(vel), mass(mass) {
 		// TODO: more varibles means re-write init function
 		this->deformation_gradient = Matrix2D();  // init as identity matrix
         this->plastic_deformation = Matrix2D();  // init as identity matrix
@@ -34,12 +33,5 @@ public:
 		memset(weights, 0, sizeof(double) * 16);
         memset(weight_gradient, 0, sizeof(Vector2D) * 16);
 	}
-
-	// TODO: position update
-	void updatePosition();
-	// TODO: inner force update
-	void updateForce();
-	// TODO: calculate stress tensor
-	Matrix2D calcStress();
 };
 

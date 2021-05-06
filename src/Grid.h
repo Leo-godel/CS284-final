@@ -40,7 +40,6 @@ public:
 
 	// Map particles to Grid
 	void initGridMassVel();
-	void initGridVel();
 	// Map volumes of particles: contains how many nodes
 	// only called once
 	void initVolumes();
@@ -50,6 +49,7 @@ public:
     void updateDeformation();
 	// Map back to pariticles
 	void updateParticlesVelocity();
+	void updateParticlesPosition();
 
 	// Board Collision
 	void collisionGrid();

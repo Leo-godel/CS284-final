@@ -4,7 +4,7 @@ void Scene::init() {
 	// modify this part to generate anything interesting
 	Snow* snow1 = Snow::snowGenerator(Vector2D(1., .16), .15, Vector2D(0, 0));
 	Snow* snow2 = Snow::snowGenerator(Vector2D(1., .4), .11, Vector2D(0, 0));
-	Snow* snow3 = Snow::snowGenerator(Vector2D(1., .57), .07, Vector2D(0, 0));
+	Snow* snow3 = Snow::snowGenerator(Vector2D(0.5, .8), .08, Vector2D(15, -10));
 	Snow* snow4 = Snow::snowGenerator(Vector2D(1.8, .4), .08, Vector2D(-20, -5));
 
 	snows.push_back(snow1);
@@ -50,20 +50,12 @@ void Scene::init() {
 
 			if (s->ifInside(rx, ry)) {
 				temp_num--;
-				particles.push_back(Particle(Vector2D(rx, ry), Vector2D(s->vel), p_mass, LAMBDA, MU));
+				particles.push_back(Particle(Vector2D(rx, ry), Vector2D(s->vel), p_mass));
 			}
 		}
 	}
 }
 
-void Scene::update() {
-	int len = particles.size();
-	for (int i = 0; i < len; ++i) {
-		// Not implemented yet
-		particles[i].updatePosition();
-		particles[i].updateForce();
-	}
-}
 
 void Scene::draw() {
 	if (SUPPORTS_POINT_SMOOTH)
