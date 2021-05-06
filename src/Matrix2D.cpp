@@ -86,7 +86,7 @@ Matrix2D Matrix2D::operator*(const Matrix2D& B) const {
 	C[0] = A * B[0];
 	C[1] = A * B[1];
 
-	return B;
+	return C;
 }
 
 Vector2D Matrix2D::operator*(const Vector2D& x) const {

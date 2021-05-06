@@ -10,7 +10,7 @@ public:
 	double mass, density, volume;
 	Vector2D pos, vel;
 	Matrix2D velocity_gradient;
-	Matrix2D deformation_gradient;
+	Matrix2D deformation_gradient, plastic_deformation, elastic_deformation;
 	Matrix2D stress;
 	// Lame parameters
 	double lambda, mu;
@@ -28,6 +28,8 @@ public:
 		pos(pos), vel(vel), mass(mass), lambda(lambda), mu(mu) {
 		// TODO: more varibles means re-write init function
 		this->deformation_gradient = Matrix2D();  // init as identity matrix
+        this->plastic_deformation = Matrix2D();  // init as identity matrix
+        this->elastic_deformation = Matrix2D();  // init as identity matrix
 		this->volume = 1;  // init volume is 1 (a unit volume)
 		memset(weights, 0, sizeof(double) * 16);
         memset(weight_gradient, 0, sizeof(Vector2D) * 16);

@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Matrix2D.h"
 #include "Vector2D.h"
+#define MATRIX_EPSILON 1e-6
 
 inline double randomLR(double left, double right) {
 	return left + rand() / (double)(RAND_MAX / (right - left));
@@ -49,37 +50,43 @@ inline void polarDecomp(Matrix2D m, Matrix2D& R, Matrix2D& S) {
 	S = R.T() * m;
 }
 
-inline void svd(Matrix2D m, Matrix2D& U, Matrix2D& sig, Matrix2D& V) {
-	Matrix2D S;
-	polarDecomp(m, U, S);
-	double c, s;
-	if (fabs(S(0, 1)) < 1e-6) {
-		sig = S;
-		c = 1;
-		s = 0;
-	}
-	else {
-		auto tao = 0.5 * (S(0, 0) - S(1, 1));
-		auto w = sqrt(tao * tao + S(0, 1) * S(0, 1));
-		auto t = tao > 0 ? S(0, 1) / (tao + w) : S(0, 1) / (tao - w);
-		c = 1.0 / sqrt(t * t + 1);
-		s = -t * c;
-		sig(0, 0) = pow(c, 2) * S(0, 0) - 2 * c * s * S(0, 1) + pow(s, 2) * S(1, 1);
-		sig(1, 1) = pow(s, 2) * S(0, 0) + 2 * c * s * S(0, 1) + pow(c, 2) * S(1, 1);
-	}
-	if (sig(0, 0) < sig(1, 1)) {
-		std::swap(sig(0, 0), sig(1, 1));
-		V(0, 0) = -s;
-		V(0, 1) = -c;
-		V(1, 0) = c;
-		V(1, 1) = -s;
-	}
-	else {
-		V(0, 0) = c;
-		V(0, 1) = -s;
-		V(1, 0) = s;
-		V(1, 1) = c;
-	}
-	V = V.T();
-	U = U * V;
+inline void svd(Matrix2D m, Matrix2D& U, Matrix2D& sig, Matrix2D& V){
+    if (fabs(m(1, 0) - m(0, 1)) < MATRIX_EPSILON && fabs(m(1, 0)) < MATRIX_EPSILON) {
+        U = Matrix2D(m(0, 0) < 0 ? -1 : 1, 0, 0, m(1, 1) < 0 ? -1 : 1);
+        sig(0, 0) = fabs(m(0, 0)), sig(1, 1) = fabs(m(1, 1));
+        V = Matrix2D();
+    }
+    else {
+        double j = m(0, 0) * m(0, 0) + m(1, 0) * m(1, 0);
+        double k = m(0, 1) * m(0, 1) + m(1, 1) * m(1, 1);
+        double v_c = m(0, 0) * m(0, 1) + m(1, 0) * m(1, 1);
+
+        if (fabs(v_c) < MATRIX_EPSILON) {
+            double s1 = sqrt(j);
+            double s2 = fabs(j - k) < MATRIX_EPSILON ? s1 : sqrt(k);
+            sig(0, 0) = s1, sig(1, 1) = s2;
+            V = Matrix2D();
+            U = Matrix2D(m(0, 0) / s1, m(0, 1) / s2, m(1, 0) / s1, m(1, 1) / s2);
+        }
+        else {
+            double jmk = j - k,
+                    jpk = j + k,
+                    root = sqrt(jmk * jmk + 4 * v_c * v_c),
+                    eig = (jpk + root) / 2,
+                    s1 = sqrt(eig),
+                    s2 = fabs(root) < MATRIX_EPSILON ? s1 : sqrt((jpk - root) / 2);
+            sig(0, 0) = s1, sig(1, 1) = s2;
+            double v_s = eig - j,
+                    len = sqrt(v_s * v_s + v_c * v_c);
+            v_c /= len;
+            v_s /= len;
+            V = Matrix2D(v_c, -v_s, v_s, v_c);
+            U = Matrix2D(
+                    (m(0, 0) * v_c + m(0, 1) * v_s) / s1,
+                    (m(0, 1) * v_c - m(0, 0) * v_s) / s2,
+                    (m(1, 0) * v_c + m(1, 1) * v_s) / s1,
+                    (m(1, 1) * v_c - m(1, 0) * v_s) / s2
+            );
+        }
+    }
 }
