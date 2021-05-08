@@ -54,6 +54,8 @@ public:
 		node_area = node_size.x * node_size.y;
 
 		particles.resize(s->particles.size());
+		thrust::copy(s->particles.begin(), s->particles.end(), particles.begin());
+		
 		nodes.resize(nodes_length);
 		Node* grid_ptr = thrust::raw_pointer_cast(&nodes[0]);
 		for (int y = 0; y < size.y; ++y) {
