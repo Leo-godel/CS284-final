@@ -19,8 +19,7 @@ inline double bspline(double x) {
 	else if (x < 2)
 		w = x * (x * (-x / 6 + 1) - 2) + 4 / 3.0;
 	else return 0;
-	//Clamp between 0 and 1... if needed
-	if (w < BSPLINE_EPSILON) return 0;
+	
 	return w;
 }
 //Slope of interpolation function
@@ -31,7 +30,7 @@ inline double bsplineSlope(double x) {
 	else if (x < 2)
 		return -x * abs_x / 2 + 2 * x - 2 * x / abs_x;
 	else return 0;
-	//Clamp between -2/3 and 2/3... if needed
+	
 }
 
 inline Matrix2D outer_product(Vector2D& a, Vector2D& b) {
