@@ -3,7 +3,7 @@
 #include "Vector2D.h"
 
 static const double
-PARTICLE_DIAM = .005,		//Diameter of each particle; smaller = higher resolution
+PARTICLE_DIAM = .001,		//Diameter of each particle; smaller = higher resolution
 MAX_TIMESTEP = 5e-4,		//Upper timestep limit
 FLIP_PERCENT = .95,			//Weight to give FLIP update over PIC (.95)
 CRIT_COMPRESS = 1 - 1.9e-2,	//Fracture threshold for compression (1-2.5e-2)

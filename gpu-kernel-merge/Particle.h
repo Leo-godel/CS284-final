@@ -1,8 +1,13 @@
-#pragma once
+#ifndef PARTICLE_H
+#define PARTICLE_H
+
 
 #include <cstring>
 #include "Vector2D.h"
 #include "Matrix2D.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
+
 
 class Particle
 {
@@ -21,9 +26,9 @@ public:
 
 	// TODO: need more variables here like deformation;
 
-	Particle() {};
+	__host__ __device__ Particle() {};
 	
-	Particle(const Vector2D& pos, const Vector2D& vel, double mass) :
+	__host__ __device__ Particle(const Vector2D& pos, const Vector2D& vel, double mass) :
 		pos(pos), vel(vel), mass(mass) {
 		// TODO: more varibles means re-write init function
 		this->deformation_gradient = Matrix2D();  // init as identity matrix
@@ -35,3 +40,4 @@ public:
 	}
 };
 
+#endif

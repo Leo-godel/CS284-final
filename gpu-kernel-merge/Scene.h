@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCENE_H
+#define SCENE_H
 
 #include "Snow.h"
 #include "Particle.h"
@@ -9,6 +10,10 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+
+#include <cuda.h>
+#include <cuda_runtime.h>
+
 
 using namespace std;
 
@@ -28,3 +33,4 @@ public:
 	void draw();
 };
 
+#endif

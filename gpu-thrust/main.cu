@@ -9,6 +9,7 @@ using namespace std;
 Simulator* simluator;
 Scene* scene;
 
+/*
 void initGLContext() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -47,15 +48,16 @@ GLFWwindow* initGLFWContext() {
 
 	return window;
 }
+*/
 
-void init() {
+__host__ void init() {
 	scene = new Scene();
 	scene->init();
 
 	simluator = new Simulator(scene);
 }
 
-void update() {
+__host__ void update() {
 	simluator->update();
 }
 
@@ -65,6 +67,7 @@ void render() {
 
 int main()
 {
+	/*
 	GLFWwindow* window = initGLFWContext();
 	initGLContext();
 
@@ -91,5 +94,14 @@ int main()
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
+	*/
+	init();
+	cout <<"# steps: " << 2000 << endl;
+	for(int i = 0; i < 2000; ++i) {
+		// frame ++;
+		// if (i % 100 == 0)
+		// 	cout << frame << endl;
+		update();
+	}
     return 0;
 }

@@ -1,10 +1,14 @@
-#pragma once
+#ifndef SNOW_H
+#define SNOW_H
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <GLFW/glfw3.h>
 #include "Vector2D.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
+
 
 using namespace std;
 
@@ -35,3 +39,4 @@ public:
 
 };
 
+#endif
