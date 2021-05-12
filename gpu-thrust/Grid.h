@@ -61,7 +61,7 @@ public:
 
 		particles.resize(s->particles.size());
 		thrust::copy(s->particles.begin(), s->particles.end(), particles.begin());
-		
+
 		
 		other_particles.resize(16 * s->particles.size());
 		/*
